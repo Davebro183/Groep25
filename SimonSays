@@ -1,0 +1,158 @@
+int reading;
+int vorigeReading;
+int leds[] = {8,9,10,11};
+int button[] = {3,4,5,6,7};
+int knop1;
+int knop2;
+int knop3;
+int knop4;
+int x;
+int reset;
+int totaal;
+int led1;
+int led2;
+int led3;
+int led4;
+int buzzer  = 12;
+int tijd;
+int autoStart;
+int teller;
+
+void setup() {
+ for(int i = 0; i < 5; i++){
+ pinMode(button[i], INPUT);
+ }
+ for(int i = 0; i < 4; i++){
+ pinMode(leds[i], OUTPUT);
+ }
+ pinMode(12,OUTPUT);
+ x = 0;
+ reset = 0;
+ knop1 = 0;
+ knop2 = 0;
+ knop3 = 0;
+ knop4 = 0;
+ tijd = 1000;
+ autoStart = 0;
+ teller = 0;
+ randomSeed(analogRead(0));
+ Serial.begin(9600);
+}
+void loop() {
+reading = digitalRead(button[0]);                                                                        //lees je de reset/startbutton in
+delay(90);  
+vorigeReading = digitalRead(button[0]);                                                                //90ms lees je hem opnieuw in
+if( (reading == 1 & reading != vorigeReading ) or (autoStart == 1)){                                  //als de knop ingederukt is en niet gewlijk is aan de vorige waarde dan reset je
+    if (reset == 1){
+      ledjesLaag();
+      x = 0;
+      knop1 = 0;
+      knop2 = 0;
+      knop3 = 0;
+      knop4 = 0;
+      reset = 0;
+      tijd = 1000;
+    }
+    else{ // hier maak je het patroon aan
+      for( int i =0; i < random(1,4); i++){                                                           // hier zeg ik hoeveel keer hij de lus moet doorlopen, maar random( dus kan 1 keer of 2 keer of 3 keer)
+      digitalWrite(random(8,12),HIGH);
+      }
+      led1 = digitalRead(leds[0]);
+      led2 = digitalRead(leds[1]);
+      led3 = digitalRead(leds[2]);
+      led4 = digitalRead(leds[3]);
+      totaal = led1 + led2 + led3 + led4;                                                            // om te kijken hoeveel lichtjes er hoog zijn
+      delay(tijd);
+      ledjesLaag();
+      reset = 1;
+      tijd = tijd/3;
+      autoStart = 0;
+  }
+  Serial.println("Uitgang van de resetbutton");
+  Serial.println(reset);
+  Serial.println("Hoeveel buttons zijn er gebruikt?");
+}
+if (teller == 3){
+  ledjesLaag();
+  digitalWrite(8,HIGH);
+}
+if (digitalRead(4) == 1 or digitalRead(5) == 1 or digitalRead(6) == 1 or digitalRead(7) == 1){                     // we kijken of een van de buttons hoog is
+  while (x < totaal){                                                                                              // x is om te kijken hoeveel drukknoppen we hebben ingedrukt. hier kijken we als de ingelzen buttons lager is dan het aantal leds die hoog zijn
+  if (digitalRead(button[1]) == 1){
+    if (knop1 == 0){                                                                                              //hier zorg je ervoor dat je niet meerdere keren hetzelfdeledje kan aanleggen
+      x = x + 1;
+      digitalWrite(leds[0],HIGH);
+      delay(1000);
+      digitalWrite(leds[0],LOW);
+      }
+      knop1 = 1;
+    }
+   if (digitalRead(button[2]) == 1){
+    if (knop2 == 0){
+      x = x + 1;
+      digitalWrite(leds[1],HIGH);
+      delay(1000);
+      digitalWrite(leds[1],LOW);
+      }
+    knop2 = 1;
+    }
+  if (digitalRead(button[3]) == 1){
+    if (knop3 == 0){
+      digitalWrite(leds[2],HIGH);
+      delay(1000);
+      digitalWrite(leds[2],LOW);
+      x = x+1;
+      }
+    knop3 = 1;
+    }
+  if (digitalRead(button[4]) == 1){
+    if (knop4 == 0){
+      digitalWrite(leds[3],HIGH);
+      delay(1000);
+      digitalWrite(leds[3],LOW);
+      x = x+1;
+      }
+    knop4 = 1;
+  }
+}
+Serial.println(x);
+  if (led2 == knop2 and led3 == knop3 and led1 == knop1 and led4 == knop4){
+      ledjesHoog(); 
+      delay(1000);
+      ledjesLaag();
+       x = 0;
+      knop1 = 0;
+      knop2 = 0;
+      knop3 = 0;
+      knop4 = 0;
+      reset = 0;
+      autoStart = 1;
+      teller = teller + 1;
+    }
+   else{
+    for(int i = 0; i < 4; i++){
+      ledjesHoog();       
+      digitalWrite(12,HIGH);
+      delay(500);
+      ledjesLaag();
+      digitalWrite(12,LOW);
+      delay(500);
+      tijd = 1000;
+      }
+    }
+  }
+}
+
+void ledjesHoog(){
+      digitalWrite(leds[0],HIGH);
+      digitalWrite(leds[1],HIGH);
+      digitalWrite(leds[2],HIGH);
+      digitalWrite(leds[3],HIGH);
+}
+void ledjesLaag(){
+      digitalWrite(leds[0],LOW);
+      digitalWrite(leds[1],LOW);
+      digitalWrite(leds[2],LOW);
+      digitalWrite(leds[3],LOW);
+    
+}
