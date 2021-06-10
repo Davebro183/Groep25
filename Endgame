@@ -1,0 +1,229 @@
+#include <IRremote.h>
+#include "SevSeg.h"
+
+SevSeg sevseg; //Instantiate a seven segment controller objec
+
+const int irReceiverPin =9; //the SIG of receiver module attach to pin2
+const int ledPin = 3;//pin 3 connect to an led
+
+IRrecv irrecv(irReceiverPin); //Creates a variable of type IRrecv
+decode_results results;
+
+int segmentPins[] = {2,3,4,5,6,7,8};
+
+int d1 = 13;
+int d2 = 12;
+int d3 = 11;
+int d4 = 10;
+int uitgangled = A0;
+
+int spel1 = 8;
+int spel2 = 3;
+int spel3 = 5;
+int i = 0;
+int a = 0;
+
+unsigned int eindresultaat1 = "";
+unsigned int eindresultaat2 = "";
+unsigned int eindresultaat3 = "";
+unsigned int eindresultaattijdelijk = "";
+unsigned int eindresultaattijdelijkdeel2 = "";
+int resultaatdeel1 = 0;
+
+signed int hoeveel = 0;
+byte segmentwaarden[]{
+B00111111, // 0 "0"
+B00000110, // 1 "1"
+B01011011, // 2 "2"
+B01001111, // 3 "3"
+B01100110, // 4 "4"
+B01101101, // 5 "5"
+B01111101, // 6 "6"
+B00000111, // 7 "7"
+B01111111, // 8 "8"
+B01101111, // 9 "9"
+B01110111, // 65 'A'
+B01111100, // 66 'b'
+B00111001, // 67 'C'
+B01011110, // 68 'd'
+B01111001, // 69 'E'
+B01110001}; // 70 'F'
+
+void setup()
+{
+  pinMode(d1,OUTPUT);
+  pinMode(d2,OUTPUT);
+  pinMode(d3,OUTPUT);
+  pinMode(d4,OUTPUT);
+  pinMode(uitgangled, OUTPUT);
+
+ for (int j = 0 ; j < 7 ; j++){
+ pinMode(segmentPins[j], OUTPUT);
+ }
+
+ pinMode(ledPin,OUTPUT);
+ Serial.begin(9600);
+ irrecv.enableIRIn();
+
+}
+void loop()
+{
+
+ if (irrecv.decode(&results))
+ {
+
+ Serial.print("irCode: ");
+ Serial.print(results.value, HEX);
+ Serial.print(", bits: ");
+ Serial.println(results.bits);
+ irrecv.resume();
+ }
+
+ delay(200);
+
+ if(results.value != 0xFFA25D &&(results.value == 0xFF6897 || results.value == 0xFFA25D || results.value == 0xFF30CF || results.value == 0xFF18E7 || results.value == 0xFF7A85 || results.value == 0xFF10EF || results.value == 0xFF38C7 || results.value == 0xFF5AA5 || results.value == 0xFF42BD || results.value == 0xFF4AB5 || results.value == 0xFF52AD)){
+ eindresultaattijdelijk = results.value;
+ Serial.println(eindresultaattijdelijk,DEC);
+
+ if(resultaatdeel1 == 1 && results.value != 0xFFA25D &&(results.value == 0xFF6897 || results.value == 0xFFA25D || results.value == 0xFF30CF || results.value == 0xFF18E7 || results.value == 0xFF7A85 || results.value == 0xFF10EF || results.value == 0xFF38C7 || results.value == 0xFF5AA5 || results.value == 0xFF42BD || results.value == 0xFF4AB5 || results.value == 0xFF52AD)){
+ eindresultaattijdelijkdeel2 = results.value;
+ Serial.println(eindresultaattijdelijkdeel2,DEC);
+}
+}
+
+if( hoeveel == 0 ){
+  digitalWrite(d1, LOW);
+  digitalWrite(d2, HIGH);
+  digitalWrite(d3, HIGH);
+  digitalWrite(d4, HIGH);
+  if(results.value == 0xFFA25D){
+    eindresultaat1 = eindresultaattijdelijk;
+    Serial.println(eindresultaat1,DEC);
+}
+}
+if( hoeveel == 1 ){
+  digitalWrite(d1, HIGH);
+  digitalWrite(d2, LOW);
+  digitalWrite(d3, HIGH);
+  digitalWrite(d4, HIGH);
+  if(results.value == 0xFFA25D){
+    eindresultaat2 = eindresultaattijdelijk;
+    Serial.println(eindresultaat2,DEC);
+}
+}
+if( hoeveel == 2 ){
+  digitalWrite(d1, HIGH);
+  digitalWrite(d2, HIGH);
+  digitalWrite(d3, LOW);
+  digitalWrite(d4, HIGH);
+  if(results.value == 0xFFA25D){
+    eindresultaat3 = eindresultaattijdelijk;
+    Serial.println(eindresultaat3,DEC);
+}
+}
+if( hoeveel == 5 ){
+  digitalWrite(d1, HIGH);
+  digitalWrite(d2, HIGH);
+  digitalWrite(d3, HIGH);
+  digitalWrite(d4, LOW);
+  for( int k = 0 ; k < 7 ; k++ ){
+  digitalWrite(segmentPins[k],bitRead(segmentwaarden[5],k));
+    if( k ==4){
+      delay(5000);
+      k = 8;
+      hoeveel = 0;
+      eindresultaat1 = 0;
+      eindresultaat2 = 0;
+      eindresultaat3 = 0;
+    }
+  }
+}
+
+if(results.value == 0xFF02FD){
+  hoeveel = hoeveel -1;
+  delay(50);
+  if(hoeveel < 0){
+    hoeveel =0;
+    }
+}
+
+if(results.value == 0xFFC23D){
+  hoeveel = hoeveel +1;
+  delay(50);
+  if(hoeveel >=3 ){
+    hoeveel =3;
+  }
+}
+
+if (eindresultaat1 == 19125 && eindresultaat2 == 31365 && eindresultaat3 == 14535 && a ==0){
+  hoeveel = 5;
+  resultaatdeel1 = 1;
+  Serial.println(resultaatdeel1);
+}
+
+if (resultaatdeel1 == 1 && eindresultaat1 == 31365 && eindresultaat2 == 19125 && eindresultaat3 == 26775 && a ==0){
+  digitalWrite(uitgangled, HIGH);
+}
+
+if(results.value == 0xFFE21D && a == 0){
+  digitalWrite(uitgangled, LOW);
+  digitalWrite(d1, HIGH);
+  digitalWrite(d2, HIGH);
+  digitalWrite(d3, HIGH);
+  digitalWrite(d4, HIGH);
+  delay(20);
+  a++;
+}
+
+ if(results.value == 0xFF6897){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[0],k));
+}
+}
+if(results.value == 0xFF30CF){//if receiver module receive 0xFFA25D
+  Serial.println(results.value);
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[1],k));
+}
+}
+if(results.value == 0xFF18E7){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[2],k));
+}
+}
+if(results.value == 0xFF7A85){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[3],k));
+}
+}
+if(results.value == 0xFF10EF){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[4],k));
+}
+}
+if(results.value == 0xFF38C7){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[5],k));
+}
+}
+if(results.value == 0xFF5AA5){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[6],k));
+}
+}
+if(results.value == 0xFF42BD){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[7],k));
+}
+}
+if(results.value == 0xFF4AB5){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[8],k));
+}
+}
+if(results.value == 0xFF52AD){//if receiver module receive 0xFFA25D
+for( int k = 0 ; k < 7 ; k++ ){
+digitalWrite(segmentPins[k],bitRead(segmentwaarden[9],k));
+}
+}
+}
