@@ -1,29 +1,31 @@
 #include <IRremote.h>
 #include "SevSeg.h"
 
-SevSeg sevseg; //Instantiate a seven segment controller objec
+SevSeg sevseg;                                                                  //Instantiate a seven segment controller objec
 
-const int irReceiverPin =9; //the SIG of receiver module attach to pin2
-const int ledPin = 3;//pin 3 connect to an led
+const int irReceiverPin =9;                                                     //the SIG of receiver module attach to pin2
+const int ledPin = 3;                                                           //pin 3 connect to an led
 
-IRrecv irrecv(irReceiverPin); //Creates a variable of type IRrecv
+IRrecv irrecv(irReceiverPin);                                                   //Creates a variable of type IRrecv
 decode_results results;
 
-int segmentPins[] = {2,3,4,5,6,7,8};
+int segmentPins[] = {2,3,4,5,6,7,8};                                            //Arraylist voor de pinnen van de 7 segment
 
-int d1 = 13;
+int d1 = 13;                                                                    //pinnen voor het selecteren van de display
 int d2 = 12;
 int d3 = 11;
 int d4 = 10;
-int uitgangled = A0;
 
-int spel1 = 8;
+int uitgangled = A0;                                                            //pin voor de basis van de transistor aan te sturen
+
+int spel1 = 8;                                                                  //de juiste code voor het bestand
 int spel2 = 3;
 int spel3 = 5;
+
 int i = 0;
 int a = 0;
 
-unsigned int eindresultaat1 = "";
+unsigned int eindresultaat1 = "";                                               //de tijdelijke resultaten voor de ingelezen waarden
 unsigned int eindresultaat2 = "";
 unsigned int eindresultaat3 = "";
 unsigned int eindresultaattijdelijk = "";
@@ -31,7 +33,7 @@ unsigned int eindresultaattijdelijkdeel2 = "";
 int resultaatdeel1 = 0;
 
 signed int hoeveel = 0;
-byte segmentwaarden[]{
+byte segmentwaarden[]{                                                          //het inistaliseren van de cijfer voor op de 7 segment
 B00111111, // 0 "0"
 B00000110, // 1 "1"
 B01011011, // 2 "2"
@@ -49,7 +51,7 @@ B01011110, // 68 'd'
 B01111001, // 69 'E'
 B01110001}; // 70 'F'
 
-void setup()
+void setup()                                                                    //de pinnen als uitgangen en ingangen inistaliseren
 {
   pinMode(d1,OUTPUT);
   pinMode(d2,OUTPUT);
@@ -83,15 +85,15 @@ void loop()
 
  if(results.value != 0xFFA25D &&(results.value == 0xFF6897 || results.value == 0xFFA25D || results.value == 0xFF30CF || results.value == 0xFF18E7 || results.value == 0xFF7A85 || results.value == 0xFF10EF || results.value == 0xFF38C7 || results.value == 0xFF5AA5 || results.value == 0xFF42BD || results.value == 0xFF4AB5 || results.value == 0xFF52AD)){
  eindresultaattijdelijk = results.value;
- Serial.println(eindresultaattijdelijk,DEC);
+ Serial.println(eindresultaattijdelijk,DEC);                                    //voor het inlezen van de waarde van de IR - led hier bij gaan we ook alle ongewenste signalen weg filteren
 
  if(resultaatdeel1 == 1 && results.value != 0xFFA25D &&(results.value == 0xFF6897 || results.value == 0xFFA25D || results.value == 0xFF30CF || results.value == 0xFF18E7 || results.value == 0xFF7A85 || results.value == 0xFF10EF || results.value == 0xFF38C7 || results.value == 0xFF5AA5 || results.value == 0xFF42BD || results.value == 0xFF4AB5 || results.value == 0xFF52AD)){
  eindresultaattijdelijkdeel2 = results.value;
- Serial.println(eindresultaattijdelijkdeel2,DEC);
+ Serial.println(eindresultaattijdelijkdeel2,DEC);                               //voor het tweede deel van de code in telezen, met behulp van de IR - led hier gaan we ook alle ongewenste signalen wegfilteren. hij zal enkel in deze lus komen als de eerte code gekraakt is.
 }
 }
 
-if( hoeveel == 0 ){
+if( hoeveel == 0 ){                                                             //als we de eerste segment selecteren komen we in deze if lus. Als we op de aan / uit knop duwen wordt het getal de geselecteerd wordt ingelezen en in het geheugen gestoken van de eerste dislay.
   digitalWrite(d1, LOW);
   digitalWrite(d2, HIGH);
   digitalWrite(d3, HIGH);
@@ -101,7 +103,7 @@ if( hoeveel == 0 ){
     Serial.println(eindresultaat1,DEC);
 }
 }
-if( hoeveel == 1 ){
+if( hoeveel == 1 ){                                                             //hetzelfde als hier boven maar dan met de tweede display en met het tweede geheugen.
   digitalWrite(d1, HIGH);
   digitalWrite(d2, LOW);
   digitalWrite(d3, HIGH);
@@ -111,7 +113,7 @@ if( hoeveel == 1 ){
     Serial.println(eindresultaat2,DEC);
 }
 }
-if( hoeveel == 2 ){
+if( hoeveel == 2 ){                                                             //hetzelfde als hier boven maar dan met de derde display en met het derde geheugen.
   digitalWrite(d1, HIGH);
   digitalWrite(d2, HIGH);
   digitalWrite(d3, LOW);
@@ -121,7 +123,7 @@ if( hoeveel == 2 ){
     Serial.println(eindresultaat3,DEC);
 }
 }
-if( hoeveel == 5 ){
+if( hoeveel == 5 ){                                                             //als de code juist is van de eerste 3 segmenten wordt er op het vierde scherm een getal getoont deze wordt 5 seconden getoont en verdwijnt dan terug.
   digitalWrite(d1, HIGH);
   digitalWrite(d2, HIGH);
   digitalWrite(d3, HIGH);
@@ -132,14 +134,14 @@ if( hoeveel == 5 ){
       delay(5000);
       k = 8;
       hoeveel = 0;
-      eindresultaat1 = 0;
+      eindresultaat1 = 0;                                                       //We reseten hier de tijdelijke geheugens terug op nul
       eindresultaat2 = 0;
       eindresultaat3 = 0;
     }
   }
 }
 
-if(results.value == 0xFF02FD){
+if(results.value == 0xFF02FD){                                                  //als deze waarde wordt ingelezen zullen we een display naar links opschuiven
   hoeveel = hoeveel -1;
   delay(50);
   if(hoeveel < 0){
@@ -147,7 +149,7 @@ if(results.value == 0xFF02FD){
     }
 }
 
-if(results.value == 0xFFC23D){
+if(results.value == 0xFFC23D){                                                  //als deze waarde wordt ingelzen zullen we een display naar rechts opschuiven
   hoeveel = hoeveel +1;
   delay(50);
   if(hoeveel >=3 ){
@@ -157,15 +159,15 @@ if(results.value == 0xFFC23D){
 
 if (eindresultaat1 == 19125 && eindresultaat2 == 31365 && eindresultaat3 == 14535 && a ==0){
   hoeveel = 5;
-  resultaatdeel1 = 1;
+  resultaatdeel1 = 1;                                                           //als we hier de juiste eerste code hebben krijgen we toegang tot de tweede code
   Serial.println(resultaatdeel1);
 }
 
 if (resultaatdeel1 == 1 && eindresultaat1 == 31365 && eindresultaat2 == 19125 && eindresultaat3 == 26775 && a ==0){
-  digitalWrite(uitgangled, HIGH);
+  digitalWrite(uitgangled, HIGH);                                               //als de tweede code ook juist zal de basis van transistor hoog worden
 }
 
-if(results.value == 0xFFE21D && a == 0){
+if(results.value == 0xFFE21D && a == 0){                                        //als we op de mute knop drukken wordt de motor uitgeschakelt
   digitalWrite(uitgangled, LOW);
   digitalWrite(d1, HIGH);
   digitalWrite(d2, HIGH);
@@ -175,7 +177,7 @@ if(results.value == 0xFFE21D && a == 0){
   a++;
 }
 
- if(results.value == 0xFF6897){//if receiver module receive 0xFFA25D
+ if(results.value == 0xFF6897){//if receiver module receive 0xFFA25D            //IR - code omvormen naar cijfer die op de 7 - segment kunnen verschijnen
 for( int k = 0 ; k < 7 ; k++ ){
 digitalWrite(segmentPins[k],bitRead(segmentwaarden[0],k));
 }
