@@ -1,3 +1,5 @@
+//Bron vermelding: gebruik gemaakt van de oefeningen van arduino em ik gebruik ook de library voor het segment display
+
 #include <IRremote.h>
 #include "SevSeg.h"
 
