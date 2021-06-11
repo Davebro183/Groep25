@@ -1,0 +1,463 @@
+#define ROW_1 0
+#define ROW_2 0
+#define ROW_3 4
+#define ROW_4 5
+#define ROW_5 6
+#define ROW_6 7
+#define ROW_7 8
+#define ROW_8 9
+
+//#define COL_1 10
+#define COL_2 11
+#define COL_3 A4 //wordt A4
+#define COL_4 A5 //wordt A5
+#define COL_5 A0
+#define COL_6 A1
+#define COL_7 A2
+#define COL_8 A3
+
+
+const int btnDriehoek = 3;
+int stateDriehoek=0;
+const int btnVierkant = 12; 
+int stateVierkant = 0; 
+const int btnX = 13;
+int stateX= 0;  
+int ledMorse=10;
+
+
+const byte rows[] = {
+    ROW_1, ROW_2, ROW_3, ROW_4, ROW_5, ROW_6, ROW_7, ROW_8
+};
+const byte col[] = {
+  COL_2, COL_3, COL_4, COL_5, COL_6, COL_7, COL_8
+};
+
+byte x[] = {8, 8, B11111111,B11111111,B11010111,B11101111,B11010111,B11111111,B11111111,B11111111};
+byte vierkant[] = {8, 8, B00000000,B00000000,B00011100,B00011100,B00011100,B00000000,B00000000,B00000000};
+byte vierkant2[] = {8, 8, B11111111,B11111111,B11000111,B11000111,B11000111,B11111111,B11111111,B11111111};
+byte driehoek[] = {8, 8, B00000000,B00000000,B00010000,B00111000,B01111100,B00000000,B00000000,B00000000};
+byte cirkel[] = {8, 8, B11111111,B11111111,B11111111,B11111111,B11111111,B11111111,B11111111,B11111111};
+byte cirkel2[] = {8, 8, B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000,B00000000};
+byte driehoek2[] = {8, 8, B11111111,
+B11101111,
+B11000111,
+B11111111,
+B11111111,
+B11111111,
+B11111111,
+B11111111};
+byte leeg[] = {8, 8, B11111111,B11111111,B11111111,B11111111,B11111111,B11111111,B11111111,B11111111};
+byte streep[] = {8, 8, B11111111,B11111111,B11111111,B11000111,B11111111,B11111111,B11111111,B11111111};
+
+int verifieCount=0;
+int count=0;
+
+
+void setup() {
+  // put your setup code here, to run once:
+  Serial.begin(9600);
+  pinMode(btnDriehoek, INPUT);
+  pinMode(btnVierkant, INPUT);
+  pinMode(btnX,INPUT);
+
+
+  pinMode(2, OUTPUT);
+    pinMode(4, OUTPUT);
+    pinMode(5, OUTPUT);
+    pinMode(6, OUTPUT);
+    pinMode(7, OUTPUT);
+    pinMode(8, OUTPUT);
+    pinMode(9, OUTPUT);
+    pinMode(ledMorse, OUTPUT);
+    pinMode(11, OUTPUT);
+    pinMode(A0, OUTPUT);
+    pinMode(A1, OUTPUT);
+    pinMode(A2, OUTPUT);
+    pinMode(A3, OUTPUT);
+    pinMode(A4, OUTPUT);
+    pinMode(A5, OUTPUT);
+}
+
+void loop() {
+    if(count==0){
+      stateDriehoek = digitalRead(btnDriehoek);
+    stateX= digitalRead(btnX);
+    stateVierkant= digitalRead(btnVierkant);
+       if(stateX==HIGH || stateVierkant ==HIGH || stateDriehoek == HIGH){
+        count++;
+      }
+    }
+
+  if(count>0 && count<4){
+  long randNumber;
+   unsigned long start = millis();
+   randNumber= random(3);
+   while(millis()- start <= 2000){
+    randomTekening(randNumber); 
+    stateDriehoek = digitalRead(btnDriehoek);
+    stateX= digitalRead(btnX);
+    stateVierkant= digitalRead(btnVierkant);
+     if(randNumber==0){ 
+       if(stateX==HIGH){
+        verifieCount++;
+     //   Serial.println("button x was geklikt");
+        digitalWrite(btnX,LOW);
+      }
+    }
+     if(randNumber==1){
+      if(stateVierkant==HIGH){
+        verifieCount++;
+     //   Serial.println("button vierkant was geklikt");
+        digitalWrite(btnVierkant,LOW); 
+      }
+    }
+   if(randNumber==2){
+      if(stateDriehoek==HIGH){
+        verifieCount++;
+       // Serial.println("button driehoek was geklikt");
+        digitalWrite(btnDriehoek,HIGH);
+      }
+    }
+   }
+   unsigned long leeg = millis();
+   while(millis() - leeg <= 500)
+   {
+   
+   }
+  
+    if(verifieCount==0){
+    count=0;
+    }
+    if(verifieCount>0){
+      count++;
+    }
+    verifieCount=0; 
+    Serial.println(count);
+ }
+ if(count>=4 && count<=8){
+  long randNumber;
+   unsigned long start = millis();
+   randNumber= random(3);
+   while(millis()- start <= 1000){
+    randomTekening(randNumber); 
+    stateDriehoek = digitalRead(btnDriehoek);
+    stateX= digitalRead(btnX);
+    stateVierkant= digitalRead(btnVierkant);
+     if(randNumber==0){ 
+       if(stateX==HIGH){
+        verifieCount++;
+      //  Serial.println("button x was geklikt");
+        digitalWrite(btnX,LOW);
+      }
+    }
+     if(randNumber==1){
+      if(stateVierkant==HIGH){
+        verifieCount++;
+      //  Serial.println("button vierkant was geklikt");
+        digitalWrite(btnVierkant,LOW); 
+      }
+    }
+   if(randNumber==2){
+      if(stateDriehoek==HIGH){
+        verifieCount++;
+       // Serial.println("button driehoek was geklikt");
+        digitalWrite(btnDriehoek,LOW);
+      }
+    }
+   }
+   unsigned long leeg = millis();
+   while(millis() - leeg <= 500)
+   {
+   
+   }
+    if(verifieCount==0){
+    count=0;
+    }
+    if(verifieCount>0){
+      count++;
+    }
+    verifieCount=0;
+    Serial.println(count);
+ }
+ if(count>8){
+   for(int i=0;i<2000;i++){
+      morsecode(3); 
+      delay(4000);  
+    }
+ }
+  // put your main code here, to run repeatedly:
+ 
+}
+
+ void  drawScreen(byte buffer2[])
+ { 
+   // Turn on each row in series
+    for (byte i = 0; i < 8; i++)        // count next row
+     {
+        digitalWrite(rows[i], HIGH);    //initiate whole row
+        for (byte a = 0; a < 8; a++)    // count next row
+        {
+          // if You set (~buffer2[i] >> a) then You will have positive
+          digitalWrite(col[a], (buffer2[i] >> a) & 0x01); // initiate whole column
+          
+          delayMicroseconds(100);       // uncoment deley for diferent speed of display
+          //delayMicroseconds(1000);
+          //delay(10);
+          //delay(100);
+          
+          digitalWrite(col[a], 1);      // reset whole column
+        }
+        digitalWrite(rows[i], LOW);     // reset whole row
+        // otherwise last row will intersect with next row
+    }
+}
+void randomTekening(int randNumber){
+   if(randNumber ==0){
+    drawScreen(x);
+   }
+   if(randNumber ==1){
+    drawScreen(vierkant2);
+   }
+   if(randNumber ==2){
+    drawScreen(driehoek2);
+   }   
+}
+void morsecode(int getal){
+  if(getal==1){
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+    //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+      
+  }
+   if(getal==2){
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(500);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(500);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+      
+  }
+    if(getal==3){
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(500);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(500);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+      //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(500);
+    digitalWrite(ledMorse, LOW); 
+    delay(200);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+    delay(200);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     
+      
+  }
+  if(getal==4){
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+      //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW); 
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+  }
+  if(getal==5){
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+      //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW); 
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW); 
+  }
+  if(getal==6){
+    //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+      //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW); 
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+   
+  }
+  if(getal==7){
+    //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+      //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+      //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+    delay(4000);  
+  }
+    if(getal==8){
+    //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+      //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+     //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+    delay(4000);  
+  }
+    if(getal==9){
+    //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+      //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+    //bolletje
+    digitalWrite(ledMorse, HIGH);
+    delay(1000);
+    digitalWrite(ledMorse, LOW);
+  }
+  if(getal==0){
+    //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+      //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+     //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+        //streepje
+    digitalWrite(ledMorse, HIGH);
+    delay(2000);
+    digitalWrite(ledMorse, LOW);
+   
+  }
+  }
